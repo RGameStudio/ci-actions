@@ -5,6 +5,15 @@ inputs:
   ssh-private-key:
     description: 'SSH private key for authentication'
     required: true
+  clang-version:
+    description: 'clang version to install'
+    required: true
+  vulkan-version:
+    description: 'VUlkan SDK version to install'
+    required: true
+  ninja-version:
+    description: 'Ninja version to install'
+    required: true
 
 runs:
   using: "composite"
@@ -20,10 +29,16 @@ runs:
         git lfs install 
         git lfs pull
 
-    - name: Setup Ninja
+    - name: Install Ninja
       uses: ashutoshvarma/setup-ninja@master
       with:
-        version: 1.12.1
+        version: ${{ inputs.ninja-version }}
+
+    - name: Install LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v2
+      with:
+        version: ${{ inputs.ninja-version }}
+        env: true
 
     - name: Check conan cache
       id: cache-conan
@@ -37,6 +52,6 @@ runs:
     - name: Prepare Vulkan SDK
       uses: humbletim/setup-vulkan-sdk@main
       with:
-        vulkan-query-version: 1.3.268.0
+        vulkan-query-version: ${{ inputs.vulkan-version }}
         vulkan-components: Vulkan-Headers, Vulkan-Loader
         vulkan-use-cache: true
